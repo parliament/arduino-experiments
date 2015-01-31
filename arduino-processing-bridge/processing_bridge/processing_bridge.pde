@@ -18,8 +18,12 @@ void setup() {
 
 void draw() {
   
+  // draw a translucent rectangle to achieve the fade effect
+  noStroke();
   fill(255, 50);
   rect(0, 0, 200, 200);
+  
+  // draw the eillipse
   stroke(0);
   noFill();
   ellipse(100, 100, circleSize, circleSize);
