@@ -1,7 +1,7 @@
 import processing.serial.*;
 
 Serial myPort;
-int paddleX, paddleWidth, halfPaddleWidth, paddleHeight, paddlePadding, stageWidth, stageHeight, count, contactCount; 
+int paddleX, paddleY, paddleWidth, halfPaddleWidth, paddleHeight, paddleLeft, paddleRight, paddlePadding, stageWidth, stageHeight, count, contactCount; 
 float ballX, ballY, ballVelocityX, ballVelocityY, ballSize, halfBallSize;
 boolean contact;
 int lf = 10;  // ASCII linefeed char
@@ -29,8 +29,7 @@ void setup() {
   myPort.bufferUntil(lf);
 }
 
-void draw() {
-  
+void update() {
   myPort.write("0"); 
   
   // draw a transparent rectangle to create fade effect.
@@ -41,10 +40,10 @@ void draw() {
 
    
   // keep paddle in bounds of stage
-  int px = paddleX - halfPaddleWidth, py, paddleLeft, paddleRight;
+  int px = paddleX - halfPaddleWidth, py;
   px = max(halfPaddleWidth, px);
   px = min(px, stageWidth - halfPaddleWidth);
-  py = stageHeight - paddleHeight - paddlePadding; // 2 pixels for padding at the bottom
+  paddleY = stageHeight - paddleHeight - paddlePadding; // 2 pixels for padding at the bottom
   paddleLeft = px - halfPaddleWidth;
   paddleRight = paddleLeft + paddleWidth;
   
@@ -73,11 +72,13 @@ void draw() {
       
       contact = true;
       contactCount = 0;
+      myPort.write("1"); 
       
+      // how far away the ball is from the center of the paddle determines how much horizontally faster it becomes
       float diffX = (halfPaddleWidth - (paddleX - ballX));
       ballVelocityX += diffX / 15;
-      println(diffX);
     
+      // ball automatically moves vertically faster when contact with paddle is made
       ballY -= ballVelocityY;
       ballVelocityY *= -1.12;
       count++;
@@ -86,8 +87,6 @@ void draw() {
       
       if (ballY > stageHeight) {
         reset();
-//        myPort.write("1");
-//        myPort.write("1,count;"); 
         println("You scored " + count + "!");
       }
 
@@ -99,7 +98,11 @@ void draw() {
     ballVelocityY *= -1;
     
   }
-   
+}
+
+void draw() {
+  update();
+     
   // draw the ball
   stroke(0);
   fill(0);
@@ -117,7 +120,7 @@ void draw() {
   } else {
     fill(0);
   } 
-  rect(paddleLeft, py, paddleWidth, paddleHeight);
+  rect(paddleLeft, paddleY, paddleWidth, paddleHeight);
 
   
 //  if (mousePressed == true) {
@@ -139,6 +142,7 @@ void reset() {
   
   contact = false;
   contactCount = 0;
+  count = 0;
 }
 
 void serialEvent(Serial p) {

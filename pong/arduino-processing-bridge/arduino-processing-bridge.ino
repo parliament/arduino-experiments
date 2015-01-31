@@ -1,4 +1,4 @@
-int incomingByte = 0;
+char incomingByte;
 int ledPin = 13;
 int sensorPin = 0;
 int score;
@@ -17,20 +17,21 @@ void loop() {
   Serial.println(sensorValue);
   
 //  // get value from processing, send to LED
-//  if (Serial.available()) {
-//    incomingByte = Serial.read();
-//  }
-//  
-//  if (incomingByte == '1') {
-//    
-//    for (int i = 0; i < score; i++) {
-//      digitalWrite(ledPin, HIGH);
-//      delay(500);
-//    }
-//    
-//  } else {
-//    digitalWrite(ledPin, LOW);
-//  }
+  if (Serial.available()) {
+    incomingByte = Serial.read();
+  
+    if (incomingByte == '1') {
+      digitalWrite(ledPin, HIGH);
+      
+//      for (int i = 0; i < score; i++) {
+//        digitalWrite(ledPin, HIGH);
+//        delay(500);
+//      }
+      
+    } else {
+      digitalWrite(ledPin, LOW);
+    }
+  }
   
   delay(10);
 }
